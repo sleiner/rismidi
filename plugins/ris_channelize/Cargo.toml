@@ -1,0 +1,15 @@
+[package]
+name = "ris_channelize"
+description = "Changes the channel of all incoming messages to the selected one"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+nih_plug.workspace = true
+rismidi.workspace = true

@@ -1,0 +1,52 @@
+[package]
+name = "rismidi"
+description = "Helpers for creating MIDI plugins"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+lazy_static.workspace = true
+nih_plug.workspace = true
+thiserror.workspace = true
+
+[workspace]
+members = ["plugins/ris_channelize", "xtask"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Simon Leiner <simon@leiner.me>"]
+license = "GPL-3.0"
+repository = "https://github.com/rismidi/rismidi"
+
+[workspace.dependencies]
+lazy_static = "1.4.0"
+rismidi = { path = "." }
+thiserror = "1.0.36"
+
+[workspace.dependencies.nih_plug]
+git = "https://github.com/robbert-vdh/nih-plug.git"
+rev = "fae7050113dff12db6b9800f876d27496e3d4e85"
+features = ["assert_process_allocs"]
+
+[workspace.dependencies.nih_plug_xtask]
+git = "https://github.com/robbert-vdh/nih-plug.git"
+rev = "fae7050113dff12db6b9800f876d27496e3d4e85"
+
+[profile.release]
+lto = "thin"
+strip = "symbols"
+
+[profile.minsize]
+inherits = "release"
+lto = "fat"
+opt-level = "s"
+codegen-units = 1
+
+[profile.profiling]
+inherits = "release"
+debug = true
+strip = "none"

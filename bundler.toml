@@ -4,4 +4,6 @@
 # [package_name]
 # name = "Human Readable Plugin Name"  # defaults to <package_name>
 
+[nogui]
+
 [ris_channelize]

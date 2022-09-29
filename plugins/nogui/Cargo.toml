@@ -1,0 +1,15 @@
+[package]
+name = "nogui"
+description = "does nothing"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+nih_plug.workspace = true
+rismidi.workspace = true

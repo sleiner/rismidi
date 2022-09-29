@@ -250,7 +250,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=fae7050113dff12db6b9800f876d27496e3d4e85#fae7050113dff12db6b9800f876d27496e3d4e85"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=417a8109363df525c292ef5cb6f91274ebc08916#417a8109363df525c292ef5cb6f91274ebc08916"
 dependencies = [
  "anyhow",
  "assert_no_alloc",
@@ -280,7 +280,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=fae7050113dff12db6b9800f876d27496e3d4e85#fae7050113dff12db6b9800f876d27496e3d4e85"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=417a8109363df525c292ef5cb6f91274ebc08916#417a8109363df525c292ef5cb6f91274ebc08916"
 dependencies = [
  "quote",
  "syn",
@@ -289,7 +289,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=fae7050113dff12db6b9800f876d27496e3d4e85#fae7050113dff12db6b9800f876d27496e3d4e85"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=417a8109363df525c292ef5cb6f91274ebc08916#417a8109363df525c292ef5cb6f91274ebc08916"
 dependencies = [
  "anyhow",
  "goblin",

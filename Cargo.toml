@@ -29,12 +29,12 @@ thiserror = "1.0.36"
 
 [workspace.dependencies.nih_plug]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "fae7050113dff12db6b9800f876d27496e3d4e85"
+rev = "417a8109363df525c292ef5cb6f91274ebc08916"
 features = ["assert_process_allocs"]
 
 [workspace.dependencies.nih_plug_xtask]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "fae7050113dff12db6b9800f876d27496e3d4e85"
+rev = "417a8109363df525c292ef5cb6f91274ebc08916"
 
 [profile.release]
 lto = "thin"

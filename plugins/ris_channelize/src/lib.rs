@@ -36,6 +36,61 @@ impl Default for RisChannelizeParams {
     }
 }
 
+impl RisChannelize {
+    fn transform_event(
+        &mut self,
+        in_event: NoteEvent,
+        target_chn: Option<MidiChannel>,
+    ) -> NoteEvent {
+        match in_event {
+            NoteEvent::NoteOff {
+                timing: _,
+                voice_id: _,
+                channel,
+                note,
+                velocity: _,
+            } => {
+                // If this is a "Note Off" event, set the channel to the one that the corresponding
+                // "Note On" event was sent to, in order to avoid hanging notes.
+
+                let out_channel = self.channel_tracker.get(
+                    note,
+                    MidiChannel::try_from_0_based(channel as usize)
+                        .expect(MIDI_CHANNEL_FROM_NIH_PLUG),
+                );
+
+                in_event.with_channel(out_channel)
+            }
+            _ => {
+                // Move the event to the target channel, if any was set.
+                let out_event = match target_chn {
+                    Some(channel) => in_event.with_channel(channel),
+                    None => in_event,
+                };
+
+                // If this is a "Note On" event, store the output channel that we are sending
+                // this to, so we can send the corresponding "Note Off" event there too.
+                if let NoteEvent::NoteOn {
+                    timing: _,
+                    voice_id: _,
+                    channel,
+                    note,
+                    velocity: _,
+                } = in_event
+                {
+                    let in_channel = MidiChannel::try_from_0_based(channel as usize)
+                        .expect(MIDI_CHANNEL_FROM_NIH_PLUG);
+                    let out_channel = target_chn.unwrap_or(in_channel);
+
+                    self.channel_tracker.set(note, in_channel, out_channel);
+                }
+
+                out_event
+            }
+        }
+    }
+}
+
 impl Plugin for RisChannelize {
     const NAME: &'static str = env!("CARGO_PKG_NAME");
     const URL: &'static str = env!("CARGO_PKG_HOMEPAGE");
@@ -76,53 +131,7 @@ impl Plugin for RisChannelize {
     ) -> ProcessStatus {
         let target_chn = MidiChannel::try_from(self.params.target_channel.plain_value()).ok();
         while let Some(in_event) = context.next_event() {
-            let out_event = match in_event {
-                NoteEvent::NoteOff {
-                    timing: _,
-                    voice_id: _,
-                    channel,
-                    note,
-                    velocity: _,
-                } => {
-                    // If this is a "Note Off" event, set the channel to the one that the corresponding
-                    // "Note On" event was sent to, in order to avoid hanging notes.
-
-                    let out_channel = self.channel_tracker.get(
-                        note,
-                        MidiChannel::try_from_0_based(channel as usize)
-                            .expect(MIDI_CHANNEL_FROM_NIH_PLUG),
-                    );
-
-                    in_event.with_channel(out_channel)
-                }
-                _ => {
-                    // Move the event to the target channel, if any was set.
-                    let out_event = match target_chn {
-                        Some(channel) => in_event.with_channel(channel),
-                        None => in_event,
-                    };
-
-                    // If this is a "Note On" event, store the output channel that we are sending
-                    // this to, so we can send the corresponding "Note Off" event there too.
-                    if let NoteEvent::NoteOn {
-                        timing: _,
-                        voice_id: _,
-                        channel,
-                        note,
-                        velocity: _,
-                    } = in_event
-                    {
-                        let in_channel = MidiChannel::try_from_0_based(channel as usize)
-                            .expect(MIDI_CHANNEL_FROM_NIH_PLUG);
-                        let out_channel = target_chn.unwrap_or(in_channel);
-
-                        self.channel_tracker.set(note, in_channel, out_channel);
-                    }
-
-                    out_event
-                }
-            };
-
+            let out_event = self.transform_event(in_event, target_chn);
             context.send_event(out_event);
         }
 

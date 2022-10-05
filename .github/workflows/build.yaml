@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+  BUILD_PROFILE: minsize
+
+jobs:
+  plugins:
+    name: Plugins for ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "macOS 12"
+            os: "macos-12"
+            targets: "x86_64-apple-darwin,aarch64-apple-darwin"
+          - name: "Ubuntu 22.04"
+            os: "ubuntu-22.04"
+            targets: "x86_64-unknown-linux-gnu"
+          - name: "Windows"
+            os: "windows-2022"
+            targets: "x86_64-pc-windows-msvc"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.targets }}
+      - name: Build plugin bundles
+        shell: bash
+        run: |
+          # Build all plugins using cargo xtask
+
+          function bundle_command() {
+            if [[ $(echo "${{ matrix.targets }}" | grep ",") ]]; then
+              echo "bundle-universal"
+            else
+              echo "bundle"
+            fi
+          }
+
+          for package in $(cargo xtask known-packages); do
+            echo "::group::${package}"
+            cargo xtask $(bundle_command) ${package} --profile ${BUILD_PROFILE}
+            echo "::endgroup::"
+          done
+      - name: Collect all plugins for packaging
+        shell: bash
+        run: |
+          # Collect all plugins for packaging
+          PACKAGE_NAME="rismidi-${{ runner.os }}"
+          echo "Archive name is \"${PACKAGE_NAME}\""
+
+          echo "PACKAGE_NAME=${PACKAGE_NAME}" >> "$GITHUB_ENV"
+          mkdir -p "artifacts/$PACKAGE_NAME"
+          mv target/bundled/* "artifacts/$PACKAGE_NAME"
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.PACKAGE_NAME }}
+          path: artifacts
+
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Build documentation
+        run: cargo doc --workspace --no-deps --profile ${BUILD_PROFILE}

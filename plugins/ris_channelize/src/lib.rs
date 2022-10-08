@@ -5,8 +5,7 @@ use nih_plug::prelude::*;
 use rismidi::{param::OptionalMidiChannel, MidiChannel, SwitchChannel};
 use std::sync::Arc;
 
-const MIDI_CHANNEL_FROM_NIH_PLUG: &'static str =
-    "MIDI channels from nih_plug must be in range 0..=15";
+const MIDI_CHANNEL_FROM_NIH_PLUG: &str = "MIDI channels from nih_plug must be in range 0..=15";
 
 struct RisChannelize {
     params: Arc<RisChannelizeParams>,

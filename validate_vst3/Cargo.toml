@@ -1,0 +1,13 @@
+[package]
+name = "validate_vst3"
+version = "0.1.0"
+edition = "2021"
+description = "Validate all rismidi plugins using the VST3 SDK"
+
+[build-dependencies]
+cmake = "0.1.48"
+color-eyre = "0.6.2"
+toml = "0.5.9"
+
+[dependencies]
+color-eyre = "0.6.2"

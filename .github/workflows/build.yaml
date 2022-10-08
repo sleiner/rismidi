@@ -8,7 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  BUILD_PROFILE: minsize
+  BUILD_PROFILE: release
 
 jobs:
   plugins:
@@ -34,6 +34,18 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.targets }}
+      - name: Cargo cache
+        if: github.event_name == 'pull_request'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+            validate_vst3/target/
+          key: build-plugins-cargo-${{ runner.os }}-${{ env.BUILD_PROFILE }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Compile shared code
         shell: bash
         run: |
@@ -65,6 +77,29 @@ jobs:
             cargo xtask $(bundle_command) ${package} --profile ${BUILD_PROFILE}
             echo "::endgroup::"
           done
+      - name: Build VST3 validator
+        shell: bash
+        run: |
+          # Install dependencies of validator and build it
+
+          if [[ $(uname) == "Linux" ]] && [[ $(lsb_release -d | grep Ubuntu) ]]; then
+            sudo apt-get update
+            sudo apt-get install -yq \
+                libgtkmm-3.0-dev \
+                libx11-dev libx11-xcb-dev \
+                libxcb-util-dev libxcb-cursor-dev libxcb-keysyms1-dev libxcb-xkb-dev \
+                libxkbcommon-dev libxkbcommon-x11-dev \
+                libfontconfig1-dev \
+                libcairo2-dev \
+                libfreetype6-dev \
+                libpango1.0-dev
+          fi
+
+          cargo test --no-run
+        working-directory: validate_vst3
+      - name: Validate VST3 plugins
+        run: cargo test
+        working-directory: validate_vst3
       - name: Collect all plugins for packaging
         shell: bash
         run: |

@@ -65,6 +65,29 @@ jobs:
             cargo xtask $(bundle_command) ${package} --profile ${BUILD_PROFILE}
             echo "::endgroup::"
           done
+      - name: Build VST3 validator
+        shell: bash
+        run: |
+          # Install dependencies of validator and build it
+
+          if [[ $(uname) == "Linux" ]] && [[ $(lsb_release -d | grep Ubuntu) ]]; then
+            sudo apt-get update
+            sudo apt-get install -yq \
+                libgtkmm-3.0-dev \
+                libx11-dev libx11-xcb-dev \
+                libxcb-util-dev libxcb-cursor-dev libxcb-keysyms1-dev libxcb-xkb-dev \
+                libxkbcommon-dev libxkbcommon-x11-dev \
+                libfontconfig1-dev \
+                libcairo2-dev \
+                libfreetype6-dev \
+                libpango1.0-dev
+          fi
+
+          cargo test --no-run
+        working-directory: validate_vst3
+      - name: Validate VST3 plugins
+        run: cargo test
+        working-directory: validate_vst3
       - name: Collect all plugins for packaging
         shell: bash
         run: |

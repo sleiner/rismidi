@@ -20,6 +20,7 @@ members = [
 
     "xtask",
 ]
+exclude = ["validate_vst3"]
 
 [workspace.package]
 version = "0.1.0"

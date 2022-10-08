@@ -34,6 +34,18 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.targets }}
+      - name: Cargo cache
+        if: github.event_name == 'pull_request'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+            validate_vst3/target/
+          key: build-plugins-cargo-${{ runner.os }}-${{ env.BUILD_PROFILE }}-${{ hashFiles('**/Cargo.lock') }}
       - name: Compile shared code
         shell: bash
         run: |

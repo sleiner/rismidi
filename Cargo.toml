@@ -44,14 +44,10 @@ git = "https://github.com/robbert-vdh/nih-plug.git"
 rev = "417a8109363df525c292ef5cb6f91274ebc08916"
 
 [profile.release]
-lto = "thin"
-strip = "symbols"
-
-[profile.minsize]
-inherits = "release"
+codegen-units = 1
 lto = "fat"
 opt-level = "s"
-codegen-units = 1
+strip = "symbols"
 
 [profile.profiling]
 inherits = "release"

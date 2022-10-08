@@ -34,6 +34,19 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.targets }}
+      - name: Compile shared code
+        shell: bash
+        run: |
+          # Build all packages using cargo for these targets: ${{ matrix.targets }}
+
+          additional_args=()
+
+          IFS=',' read -ra targets <<< "${{ matrix.targets }}"
+          for target in "${targets[@]}"; do
+              additional_args+=("--target" "${target}")
+          done
+
+          cargo build --workspace --profile ${BUILD_PROFILE} "${additional_args[@]}"
       - name: Build plugin bundles
         shell: bash
         run: |

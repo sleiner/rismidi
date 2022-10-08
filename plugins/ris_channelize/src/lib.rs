@@ -5,8 +5,7 @@ use nih_plug::prelude::*;
 use rismidi::{param::OptionalMidiChannel, MidiChannel, SwitchChannel};
 use std::sync::Arc;
 
-const MIDI_CHANNEL_FROM_NIH_PLUG: &'static str =
-    "MIDI channels from nih_plug must be in range 0..=15";
+const MIDI_CHANNEL_FROM_NIH_PLUG: &str = "MIDI channels from nih_plug must be in range 0..=15";
 
 struct RisChannelize {
     params: Arc<RisChannelizeParams>,
@@ -161,7 +160,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn transform_note_events() {
+    fn note_events_are_transformed() {
         let mut processor = RisChannelize::default();
 
         {
@@ -177,23 +176,29 @@ mod tests {
             assert_eq!(out_event, in_event.with_channel(MidiChannel::Channel12));
         }
         {
-            let in_event = NoteEvent::NoteOn {
+            let in_event = NoteEvent::NoteOff {
                 timing: 123,
                 voice_id: None,
-                channel: 2,
-                note: 55,
+                channel: 3,
+                note: 54,
                 velocity: 0.6,
             };
 
             let out_event = processor.transform_event(in_event, Some(MidiChannel::Channel12));
             assert_eq!(out_event, in_event.with_channel(MidiChannel::Channel12));
         }
+    }
+
+    #[test]
+    fn note_off_follows_note_on_channel() {
+        let mut processor = RisChannelize::default();
+
         {
-            let in_event = NoteEvent::NoteOff {
+            let in_event = NoteEvent::NoteOn {
                 timing: 123,
                 voice_id: None,
-                channel: 2,
-                note: 55,
+                channel: 3,
+                note: 54,
                 velocity: 0.6,
             };
 
@@ -209,8 +214,38 @@ mod tests {
                 velocity: 0.6,
             };
 
-            let out_event = processor.transform_event(in_event, Some(MidiChannel::Channel12));
+            let out_event = processor.transform_event(in_event, Some(MidiChannel::Channel9));
             assert_eq!(out_event, in_event.with_channel(MidiChannel::Channel12));
+        }
+    }
+
+    #[test]
+    fn no_transform_if_no_channel_selected() {
+        let mut processor = RisChannelize::default();
+
+        {
+            let in_event = NoteEvent::NoteOn {
+                timing: 123,
+                voice_id: None,
+                channel: 3,
+                note: 54,
+                velocity: 0.6,
+            };
+
+            let out_event = processor.transform_event(in_event, None);
+            assert_eq!(out_event, in_event.with_channel(MidiChannel::Channel4));
+        }
+        {
+            let in_event = NoteEvent::NoteOff {
+                timing: 123,
+                voice_id: None,
+                channel: 3,
+                note: 54,
+                velocity: 0.6,
+            };
+
+            let out_event = processor.transform_event(in_event, None);
+            assert_eq!(out_event, in_event.with_channel(MidiChannel::Channel4));
         }
     }
 }

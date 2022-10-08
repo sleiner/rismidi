@@ -2,7 +2,7 @@ mod channel_tracker;
 
 use channel_tracker::ChannelTracker;
 use nih_plug::prelude::*;
-use rismidi::{param::OptionalMidiChannel, MidiChannel, SwitchChannel};
+use rismidi::{param::OptionalMidiChannel, HasChannel, MidiChannel};
 use std::sync::Arc;
 
 const MIDI_CHANNEL_FROM_NIH_PLUG: &str = "MIDI channels from nih_plug must be in range 0..=15";

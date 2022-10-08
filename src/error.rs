@@ -12,4 +12,7 @@ pub enum RismidiError {
 
     #[error("no channel was selected")]
     NoChannelSelected,
+
+    #[error("message does not have a channel")]
+    MsgHasNoChannel,
 }

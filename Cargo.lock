@@ -405,6 +405,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ris_channel_filter"
+version = "0.1.0"
+dependencies = [
+ "nih_plug",
+ "rismidi",
+]
+
+[[package]]
 name = "ris_channelize"
 version = "0.1.0"
 dependencies = [

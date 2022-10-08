@@ -13,7 +13,13 @@ nih_plug.workspace = true
 thiserror.workspace = true
 
 [workspace]
-members = ["plugins/ris_channelize", "plugins/nogui", "xtask"]
+members = [
+    "plugins/ris_channelize",
+    "plugins/ris_channel_filter",
+    "plugins/nogui",
+
+    "xtask",
+]
 
 [workspace.package]
 version = "0.1.0"

@@ -32,16 +32,16 @@ repository = "https://github.com/rismidi/rismidi"
 [workspace.dependencies]
 lazy_static = "1.4.0"
 rismidi = { path = "." }
-thiserror = "1.0.36"
+thiserror = "1.0.37"
 
 [workspace.dependencies.nih_plug]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "417a8109363df525c292ef5cb6f91274ebc08916"
+rev = "3ba62c4aabf8c9db6736f837320af0174e10e02a"
 features = ["assert_process_allocs"]
 
 [workspace.dependencies.nih_plug_xtask]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "417a8109363df525c292ef5cb6f91274ebc08916"
+rev = "3ba62c4aabf8c9db6736f837320af0174e10e02a"
 
 [profile.release]
 codegen-units = 1

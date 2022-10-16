@@ -1,19 +1,7 @@
-[package]
-name = "rismidi"
-description = "Helpers for creating MIDI plugins"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-license.workspace = true
-repository.workspace = true
-
-[dependencies]
-lazy_static.workspace = true
-nih_plug.workspace = true
-thiserror.workspace = true
-
 [workspace]
 members = [
+    "rismidi",
+
     "plugins/ris_channelize",
     "plugins/ris_channel_filter",
     "plugins/nogui",
@@ -31,7 +19,7 @@ repository = "https://github.com/rismidi/rismidi"
 
 [workspace.dependencies]
 lazy_static = "1.4.0"
-rismidi = { path = "." }
+rismidi = { path = "./rismidi" }
 thiserror = "1.0.37"
 
 [workspace.dependencies.nih_plug]

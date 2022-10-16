@@ -55,7 +55,7 @@ impl RisChannelize {
 
                 let out_channel = self.channel_tracker.get(
                     note,
-                    MidiChannel::try_from_0_based(channel as usize)
+                    MidiChannel::try_from_0_based(channel.into())
                         .expect(MIDI_CHANNEL_FROM_NIH_PLUG),
                 );
 
@@ -78,7 +78,7 @@ impl RisChannelize {
                     velocity: _,
                 } = in_event
                 {
-                    let in_channel = MidiChannel::try_from_0_based(channel as usize)
+                    let in_channel = MidiChannel::try_from_0_based(channel.into())
                         .expect(MIDI_CHANNEL_FROM_NIH_PLUG);
                     let out_channel = target_chn.unwrap_or(in_channel);
 

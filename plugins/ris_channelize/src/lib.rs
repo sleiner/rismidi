@@ -30,7 +30,8 @@ impl Default for RisChannelize {
 impl Default for RisChannelizeParams {
     fn default() -> Self {
         Self {
-            target_channel: OptionalMidiChannelParam::new("Target Channel", None),
+            target_channel: OptionalMidiChannelParam::new("Target Channel", None)
+                .with_none_selected_description("No Change"),
         }
     }
 }

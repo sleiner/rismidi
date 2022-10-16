@@ -23,7 +23,8 @@ impl Default for RisChannelFilter {
 impl Default for RisChannelFilterParams {
     fn default() -> Self {
         Self {
-            target_channel: OptionalMidiChannelParam::new("Target Channel", None),
+            target_channel: OptionalMidiChannelParam::new("Target Channel", None)
+                .with_none_selected_description("All"),
         }
     }
 }

@@ -1,230 +1,220 @@
+use crate::{MidiChannel, RismidiError};
 use nih_plug::prelude::*;
+use std::{
+    fmt::{Debug, Display},
+    sync::Arc,
+};
 
-use crate::RismidiError;
+/// A plugin parameter modelling either the selection of a MIDI channel or the explicit selection of no channel.
+pub struct OptionalMidiChannelParam {
+    /// As this is a parameter with a finite choice of (mostly) sequential options, we delegate most of the heavy
+    /// lifting to this.
+    inner: IntParam,
 
-use super::MidiChannel;
+    /// We store the default here in addition to `inner.default` to avoid runtime conversions in
+    /// [`Param::default_plain_value`].
+    default: Option<MidiChannel>,
 
-/// A parameter representing either a MIDI channel or no selection at all.
-/// It is intended for use with [`nih_plug::param::EnumParam`].
-///
-/// # Examples
-///
-/// ```
-/// use nih_plug::prelude::*;
-/// use rismidi::param::OptionalMidiChannel;
-///
-/// #[derive(Params)]
-/// struct MyPluginParams {
-///     pub channel_selector: EnumParam<OptionalMidiChannel>,
-/// }
-/// ```
-#[derive(Enum, Clone, Copy, Debug, Eq, PartialEq, PartialOrd)]
-pub enum OptionalMidiChannel {
-    #[id = "none"]
-    #[name = "No Channel"]
-    None,
-
-    #[id = "1"]
-    #[name = "1"]
-    Channel1,
-
-    #[id = "2"]
-    #[name = "2"]
-    Channel2,
-
-    #[id = "3"]
-    #[name = "3"]
-    Channel3,
-
-    #[id = "4"]
-    #[name = "4"]
-    Channel4,
-
-    #[id = "5"]
-    #[name = "5"]
-    Channel5,
-
-    #[id = "6"]
-    #[name = "6"]
-    Channel6,
-
-    #[id = "7"]
-    #[name = "7"]
-    Channel7,
-
-    #[id = "8"]
-    #[name = "8"]
-    Channel8,
-
-    #[id = "9"]
-    #[name = "9"]
-    Channel9,
-
-    #[id = "10"]
-    #[name = "10"]
-    Channel10,
-
-    #[id = "11"]
-    #[name = "11"]
-    Channel11,
-
-    #[id = "12"]
-    #[name = "12"]
-    Channel12,
-
-    #[id = "13"]
-    #[name = "13"]
-    Channel13,
-
-    #[id = "14"]
-    #[name = "14"]
-    Channel14,
-
-    #[id = "15"]
-    #[name = "15"]
-    Channel15,
-
-    #[id = "16"]
-    #[name = "16"]
-    Channel16,
+    /// The parameter description visible in the plugin host if no channel is selected.
+    description: &'static str,
 }
 
-impl OptionalMidiChannel {
-    /// If a channel is selected, get its index as a 0-based [`u8`].
+impl OptionalMidiChannelParam {
+    /// Models the transformation between integers and the normalized parameter value.
     ///
-    /// # Examples
-    ///
-    /// If a channel is selected, you will get a [`u8`]:
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::Channel1;
-    /// assert_eq!(channel.try_to_0_based(), Ok(0));
-    /// ```
-    ///
-    /// Else, you will get a [`RismidiError`];
-    /// ```
-    /// use rismidi::{param::OptionalMidiChannel, RismidiError};
-    ///
-    /// let channel = OptionalMidiChannel::None;
-    /// assert_eq!(channel.try_to_0_based(), Err(RismidiError::NoChannelSelected));
-    /// ```
-    pub fn try_to_0_based(&self) -> Result<u8, RismidiError> {
-        self.try_to_1_based().map(|c| c - 1)
+    ///   - 0 means no channel is selected.
+    ///   - 1 to 16 means one specific channel.
+    const RANGE: IntRange = IntRange::Linear { min: 0, max: 16 };
+
+    /// The default description of the "no channel selected" state.
+    pub const DEFAULT_NO_CHANNEL_DESCRIPTION: &str = "No Channel";
+
+    /// Creates a new [`OptMidiChannelParam`]. Use the other associated functions to modify the
+    /// behavior of the parameter.
+    pub fn new(name: impl Into<String>, default: Option<MidiChannel>) -> Self {
+        let instance = Self {
+            inner: IntParam::new(name, Self::selection_to_inner(default), Self::RANGE),
+            default,
+            description: "",
+        };
+
+        instance.with_none_selected_description(Self::DEFAULT_NO_CHANNEL_DESCRIPTION)
     }
 
-    /// If a channel is selected, get its index as a 1-based [`u8`].
+    /// Sets the description of the "no channel selected" position. Usually, this will be shown to
+    /// the user by the plugin host.
+    pub fn with_none_selected_description(mut self, description: &'static str) -> Self {
+        self.description = description;
+
+        self.with_updated_callbacks()
+    }
+
+    fn with_updated_callbacks(mut self) -> Self {
+        self.inner = self
+            .inner
+            .with_value_to_string(Arc::new(|index| {
+                let selection = Self::try_selection_from_inner(index).unwrap_or_default();
+                Self::selection_to_string(selection, self.description)
+            }))
+            .with_string_to_value(Arc::new(|string| {
+                let selection = Self::try_selection_from_string(string, self.description).ok()?;
+                Some(Self::selection_to_inner(selection))
+            }));
+
+        self
+    }
+
+    /// Tries to convert the representation of [`Self::inner`] into an [`Option<MidiChannel>`].
     ///
-    /// # Examples
+    /// It will return:
     ///
-    /// If a channel is selected, you will get a [`u8`]:
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::Channel1;
-    /// assert_eq!(channel.try_to_1_based(), Ok(1));
-    /// ```
-    ///
-    /// Else, you will get a [`RismidiError`];
-    /// ```
-    /// use rismidi::{param::OptionalMidiChannel, RismidiError};
-    ///
-    /// let channel = OptionalMidiChannel::None;
-    /// assert_eq!(channel.try_to_1_based(), Err(RismidiError::NoChannelSelected));
-    /// ```
-    pub fn try_to_1_based(&self) -> Result<u8, RismidiError> {
-        match self {
-            OptionalMidiChannel::None => Err(RismidiError::NoChannelSelected),
-            _ => {
-                // ASSUMPTIONS:
-                //   - The index is no greater than u8::MAX
-                //       => see test num_variants_is_17
-                //   - The index _is_ the 1-based channel number
-                //       => see test index_is_1_based_channel_number
-                Ok(self.to_index().try_into().unwrap())
+    ///   - [`Ok(Some(MidiChannel)`] if `inner_val` represents the selection of a channel.
+    ///   - [`Ok(None)`] if `inner_val` represents the fact that "no channel" was selected.
+    ///   - [`Err`] if `inner_val` does not represent any valid selection.
+    fn try_selection_from_inner(inner_val: i32) -> Result<Option<MidiChannel>, RismidiError> {
+        match inner_val {
+            0 => Ok(None),
+            other => Ok(Some(MidiChannel::try_from_1_based(other as usize)?)),
+        }
+        .map_err(|_: RismidiError| RismidiError::IntOutOfBounds {
+            found: inner_val,
+            min: 0,
+            max: 16,
+        })
+    }
+
+    /// Converts an [`Option<MidiChannel>`] into the appropriate representation for [`Self::inner`].
+    fn selection_to_inner(from: Option<MidiChannel>) -> i32 {
+        match from {
+            Some(channel) => channel.to_1_based().into(),
+            None => 0,
+        }
+    }
+
+    /// Converts an [`Option<MidiChannel>] into the string representation to show to the user.
+    fn selection_to_string(selection: Option<MidiChannel>, no_channel_msg: &str) -> String {
+        match selection {
+            None => no_channel_msg.to_string(),
+            Some(channel) => {
+                format!("{}", channel.to_1_based())
             }
         }
     }
 
-    /// Turns a 0-based channel number into a [`OptionalMidiChannel`].
-    ///
-    /// # Examples
-    ///
-    /// For a valid channel index, you will get a [`OptionalMidiChannel`] instance:
-    ///
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::try_from_0_based(0).unwrap();
-    /// assert_eq!(channel, OptionalMidiChannel::Channel1);
-    /// ```
-    ///
-    /// For invalid indices, [`crate::RismidiError`] will be returned:
-    ///
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::try_from_0_based(16);
-    /// assert!(channel.is_err());
-    /// ```
-    pub fn try_from_0_based(channel: usize) -> Result<OptionalMidiChannel, RismidiError> {
-        Self::try_from_1_based(channel.wrapping_add(1)).map_err(|_| RismidiError::UIntOutOfBounds {
-            found: channel,
-            min: 0,
-            max: Self::variants().len() - 2,
-        })
-    }
+    /// Tries to convert the string representation of a user selection into an [`Option<MidiChannel>`].
+    fn try_selection_from_string(
+        description: &str,
+        no_channel_msg: &str,
+    ) -> Result<Option<MidiChannel>, RismidiError> {
+        let string = description.trim();
 
-    /// Turns a 1-based channel number into a [`OptionalMidiChannel`].
-    ///
-    /// # Examples
-    ///
-    /// For a valid channel index, you will get a [`OptionalMidiChannel`] instance:
-    ///
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::try_from_1_based(1).unwrap();
-    /// assert_eq!(channel, OptionalMidiChannel::Channel1);
-    /// ```
-    ///
-    /// For invalid indices, [`crate::RismidiError`] will be returned:
-    ///
-    /// ```
-    /// use rismidi::param::OptionalMidiChannel;
-    ///
-    /// let channel = OptionalMidiChannel::try_from_1_based(0);
-    /// assert!(channel.is_err());
-    /// ```
-    pub fn try_from_1_based(channel: usize) -> Result<OptionalMidiChannel, RismidiError> {
-        let min_index: usize = 1;
-        let max_index = Self::variants().len() - 1;
-
-        if min_index <= channel && channel <= max_index {
-            Ok(Self::from_index(channel))
+        if string == no_channel_msg {
+            Ok(None)
         } else {
-            Err(RismidiError::UIntOutOfBounds {
-                found: channel,
-                min: min_index,
-                max: max_index,
-            })
+            let index = string.parse().map_err(|_| RismidiError::UnknownInput)?;
+            Self::try_selection_from_inner(index)
         }
     }
 }
 
-impl TryFrom<OptionalMidiChannel> for MidiChannel {
-    type Error = RismidiError;
-
-    fn try_from(value: OptionalMidiChannel) -> Result<Self, Self::Error> {
-        MidiChannel::try_from_1_based(value.try_to_1_based()? as usize)
+impl Display for OptionalMidiChannelParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let string = Self::selection_to_string(self.plain_value(), self.description);
+        write!(f, "{}", string)
     }
 }
 
-impl From<MidiChannel> for OptionalMidiChannel {
-    fn from(channel: MidiChannel) -> Self {
-        // Since assume that MidiChannel::to_1_based() returns a valid index for
-        // OptionalMidiChannel::try_from_1_based(), we can safely unwrap here.
-        OptionalMidiChannel::try_from_1_based(channel.to_1_based() as usize).unwrap()
+impl Debug for OptionalMidiChannelParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("OptMidiChannelParam")
+            .field("channel", &self.plain_value())
+            .field("default", &self.default)
+            .field("no_channel_msg", &self.description)
+            .finish()
+    }
+}
+
+impl Param for OptionalMidiChannelParam {
+    type Plain = Option<MidiChannel>;
+
+    fn name(&self) -> &str {
+        self.inner.name()
+    }
+
+    fn unit(&self) -> &'static str {
+        self.inner.unit()
+    }
+
+    fn poly_modulation_id(&self) -> Option<u32> {
+        self.inner.poly_modulation_id()
+    }
+
+    fn plain_value(&self) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.plain_value()).unwrap_or(self.default)
+    }
+
+    fn normalized_value(&self) -> f32 {
+        self.inner.normalized_value()
+    }
+
+    fn unmodulated_plain_value(&self) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.unmodulated_plain_value()).unwrap_or(self.default)
+    }
+
+    fn unmodulated_normalized_value(&self) -> f32 {
+        self.inner.unmodulated_normalized_value()
+    }
+
+    fn default_plain_value(&self) -> Self::Plain {
+        self.default
+    }
+
+    fn step_count(&self) -> Option<usize> {
+        self.inner.step_count()
+    }
+
+    fn previous_step(&self, from: Self::Plain) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.previous_step(Self::selection_to_inner(from)))
+            .unwrap_or(self.default)
+    }
+
+    fn next_step(&self, from: Self::Plain) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.next_step(Self::selection_to_inner(from)))
+            .unwrap_or(self.default)
+    }
+
+    fn normalized_value_to_string(&self, _normalized: f32, _include_unit: bool) -> String {
+        // This function is usually never called - nih_plug calls IntParam's implementation of this function.
+        nih_debug_assert_failure!(
+            "Did not expect a call of OptionalMidiChannelParam::normalized_value_to_string()"
+        );
+
+        String::from("")
+    }
+
+    fn string_to_normalized_value(&self, _string: &str) -> Option<f32> {
+        // This function is usually never called - nih_plug calls IntParam's implementation of this function.
+        nih_debug_assert_failure!(
+            "Did not expect a call of OptionalMidiChannelParam::string_to_normalized_value()"
+        );
+
+        None
+    }
+
+    fn preview_normalized(&self, plain: Self::Plain) -> f32 {
+        Self::RANGE.normalize(Self::selection_to_inner(plain))
+    }
+
+    fn preview_plain(&self, normalized: f32) -> Self::Plain {
+        Self::try_selection_from_inner(Self::RANGE.unnormalize(normalized)).unwrap_or(self.default)
+    }
+
+    fn flags(&self) -> ParamFlags {
+        self.inner.flags()
+    }
+
+    fn as_ptr(&self) -> nih_plug::param::internals::ParamPtr {
+        self.inner.as_ptr()
     }
 }
 
@@ -232,33 +222,28 @@ impl From<MidiChannel> for OptionalMidiChannel {
 mod tests {
     use super::*;
 
-    #[test]
-    fn midi_channel_from_none() {
-        let c = MidiChannel::try_from(OptionalMidiChannel::None);
-        assert!(matches!(c, Err(RismidiError::NoChannelSelected)));
+    fn current_description(param: impl Param) -> String {
+        let p = param.as_ptr();
+        unsafe { p.normalized_value_to_string(p.normalized_value(), true) }
     }
 
     #[test]
-    fn midi_channel_from_some() {
+    fn description_when_none_selected() {
+        let no_channel_description = "this is a test string";
+        let param = OptionalMidiChannelParam::new("test", None)
+            .with_none_selected_description(no_channel_description);
+
+        // param is still in the default position: no channel selected
+        assert_eq!(current_description(param), no_channel_description);
+    }
+
+    #[test]
+    fn description_when_channel_selected() {
         for i in 1..=16 {
-            let opt_channel = OptionalMidiChannel::try_from_1_based(i).unwrap();
-            assert_eq!(opt_channel.try_to_1_based(), Ok(i as u8));
+            let channel = MidiChannel::try_from_1_based(i).unwrap();
+            let param = OptionalMidiChannelParam::new("test", Some(channel));
 
-            let channel = MidiChannel::try_from(opt_channel).unwrap();
-            assert_eq!(channel.to_1_based(), opt_channel.try_to_1_based().unwrap());
-        }
-    }
-
-    #[test]
-    fn num_variants_is_17() {
-        assert_eq!(OptionalMidiChannel::variants().len(), 17);
-    }
-
-    #[test]
-    fn index_is_1_based_channel_number() {
-        for i in 1..=16 {
-            let channel = OptionalMidiChannel::from_index(i);
-            assert_eq!(channel.try_to_1_based(), Ok(i as u8));
+            assert_eq!(current_description(param), format!("{i}"));
         }
     }
 }

@@ -2,7 +2,7 @@ mod channel_tracker;
 
 use channel_tracker::ChannelTracker;
 use nih_plug::prelude::*;
-use rismidi::{param::OptionalMidiChannel, HasChannel, MidiChannel};
+use rismidi::{param::OptionalMidiChannelParam, HasChannel, MidiChannel};
 use std::sync::Arc;
 
 const MIDI_CHANNEL_FROM_NIH_PLUG: &str = "MIDI channels from nih_plug must be in range 0..=15";
@@ -15,7 +15,7 @@ struct RisChannelize {
 #[derive(Params)]
 struct RisChannelizeParams {
     #[id = "target_channel"]
-    pub target_channel: EnumParam<OptionalMidiChannel>,
+    pub target_channel: OptionalMidiChannelParam,
 }
 
 impl Default for RisChannelize {
@@ -30,7 +30,7 @@ impl Default for RisChannelize {
 impl Default for RisChannelizeParams {
     fn default() -> Self {
         Self {
-            target_channel: EnumParam::new("Target Channel", OptionalMidiChannel::None),
+            target_channel: OptionalMidiChannelParam::new("Target Channel", None),
         }
     }
 }
@@ -128,7 +128,7 @@ impl Plugin for RisChannelize {
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext,
     ) -> ProcessStatus {
-        let target_chn = MidiChannel::try_from(self.params.target_channel.plain_value()).ok();
+        let target_chn = self.params.target_channel.plain_value();
         while let Some(in_event) = context.next_event() {
             let out_event = self.transform_event(in_event, target_chn);
             context.send_event(out_event);

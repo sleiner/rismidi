@@ -1,5 +1,5 @@
 use nih_plug::prelude::*;
-use rismidi::{param::OptionalMidiChannel, HasChannel, MidiChannel};
+use rismidi::{HasChannel, MidiChannel, OptionalMidiChannelParam};
 use std::sync::Arc;
 
 struct RisChannelFilter {
@@ -9,7 +9,7 @@ struct RisChannelFilter {
 #[derive(Params)]
 struct RisChannelFilterParams {
     #[id = "target_channel"]
-    pub target_channel: EnumParam<OptionalMidiChannel>,
+    pub target_channel: OptionalMidiChannelParam,
 }
 
 impl Default for RisChannelFilter {
@@ -23,7 +23,7 @@ impl Default for RisChannelFilter {
 impl Default for RisChannelFilterParams {
     fn default() -> Self {
         Self {
-            target_channel: EnumParam::new("Target Channel", OptionalMidiChannel::None),
+            target_channel: OptionalMidiChannelParam::new("Target Channel", None),
         }
     }
 }
@@ -88,7 +88,7 @@ impl Plugin for RisChannelFilter {
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext,
     ) -> ProcessStatus {
-        let target_chn = MidiChannel::try_from(self.params.target_channel.plain_value()).ok();
+        let target_chn = self.params.target_channel.plain_value();
         while let Some(in_event) = context.next_event() {
             if let Some(out_event) = self.transform_event(in_event, target_chn) {
                 context.send_event(out_event);

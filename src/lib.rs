@@ -8,4 +8,4 @@ pub mod param;
 pub use constants::*;
 pub use error::RismidiError;
 pub use has_channel::HasChannel;
-pub use param::MidiChannel;
+pub use param::{MidiChannel, OptionalMidiChannelParam};

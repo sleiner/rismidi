@@ -17,66 +17,82 @@ use nih_plug::prelude::*;
 /// ```
 #[derive(Enum, Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum MidiChannel {
+    /// Channel 1 (in 1-based numbering)
     #[id = "1"]
     #[name = "1"]
     Channel1,
 
+    /// Channel 2 (in 1-based numbering)
     #[id = "2"]
     #[name = "2"]
     Channel2,
 
+    /// Channel 3 (in 1-based numbering)
     #[id = "3"]
     #[name = "3"]
     Channel3,
 
+    /// Channel 4 (in 1-based numbering)
     #[id = "4"]
     #[name = "4"]
     Channel4,
 
+    /// Channel 5 (in 1-based numbering)
     #[id = "5"]
     #[name = "5"]
     Channel5,
 
+    /// Channel 6 (in 1-based numbering)
     #[id = "6"]
     #[name = "6"]
     Channel6,
 
+    /// Channel 7 (in 1-based numbering)
     #[id = "7"]
     #[name = "7"]
     Channel7,
 
+    /// Channel 8 (in 1-based numbering)
     #[id = "8"]
     #[name = "8"]
     Channel8,
 
+    /// Channel 9 (in 1-based numbering)
     #[id = "9"]
     #[name = "9"]
     Channel9,
 
+    /// Channel 10 (in 1-based numbering)
     #[id = "10"]
     #[name = "10"]
     Channel10,
 
+    /// Channel 11 (in 1-based numbering)
     #[id = "11"]
     #[name = "11"]
     Channel11,
 
+    /// Channel 12 (in 1-based numbering)
     #[id = "12"]
     #[name = "12"]
     Channel12,
 
+    /// Channel 13 (in 1-based numbering)
     #[id = "13"]
     #[name = "13"]
     Channel13,
 
+    /// Channel 14 (in 1-based numbering)
     #[id = "14"]
     #[name = "14"]
     Channel14,
 
+    /// Channel 15 (in 1-based numbering)
     #[id = "15"]
     #[name = "15"]
     Channel15,
 
+    /// Channel 16 (in 1-based numbering)
     #[id = "16"]
     #[name = "16"]
     Channel16,

@@ -1,11 +1,15 @@
 use crate::{MidiChannel, RismidiError};
 use nih_plug::midi::NoteEvent;
 
+/// This trait represents the fact that a type can be assigned a MIDI channel.
 pub trait HasChannel {
+    /// Gets the current MIDI channel, if any.
     fn get_channel(&self) -> Result<MidiChannel, RismidiError>;
 
+    /// Sets the channel for the current object, if it has any.
     fn set_channel(&mut self, new_channel: MidiChannel) -> Result<(), RismidiError>;
 
+    /// Returns the same event, but if it has a MIDI channel, it will be overwritten.
     fn with_channel(self, channel: MidiChannel) -> Self;
 }
 

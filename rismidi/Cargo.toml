@@ -8,6 +8,7 @@ license.workspace = true
 repository.workspace = true
 
 [dependencies]
+displaydoc = "0.2.3"
 lazy_static.workspace = true
 nih_plug.workspace = true
 thiserror.workspace = true

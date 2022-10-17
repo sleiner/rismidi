@@ -29,7 +29,7 @@ impl OptionalMidiChannelParam {
     /// The default description of the "no channel selected" state.
     pub const DEFAULT_NO_CHANNEL_DESCRIPTION: &str = "No Channel";
 
-    /// Creates a new [`OptMidiChannelParam`]. Use the other associated functions to modify the
+    /// Creates a new [`OptionalMidiChannelParam`]. Use the other associated functions to modify the
     /// behavior of the parameter.
     pub fn new(name: impl Into<String>, default: Option<MidiChannel>) -> Self {
         let instance = Self {

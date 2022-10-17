@@ -1,4 +1,5 @@
-// #![warn(missing_docs)] FIXME
+#![warn(missing_docs)]
+#![doc = include_str!("../README.md")]
 
 mod error;
 mod has_channel;

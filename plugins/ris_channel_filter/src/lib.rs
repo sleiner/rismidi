@@ -89,8 +89,8 @@ impl Plugin for RisChannelFilter {
         _aux: &mut AuxiliaryBuffers,
         context: &mut impl ProcessContext,
     ) -> ProcessStatus {
-        let target_chn = self.params.target_channel.plain_value();
         while let Some(in_event) = context.next_event() {
+            let target_chn = self.params.target_channel.plain_value();
             if let Some(out_event) = self.transform_event(in_event, target_chn) {
                 context.send_event(out_event);
             }

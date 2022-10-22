@@ -213,7 +213,7 @@ impl Param for OptionalMidiChannelParam {
         self.inner.flags()
     }
 
-    fn as_ptr(&self) -> nih_plug::param::internals::ParamPtr {
+    fn as_ptr(&self) -> ParamPtr {
         self.inner.as_ptr()
     }
 }

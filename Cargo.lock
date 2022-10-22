@@ -259,7 +259,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=3f007c8a683417fc633cf5447c92b6cef9432809#3f007c8a683417fc633cf5447c92b6cef9432809"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=34cc1ba30b65d7a2d649c56b5a043c5c2d117878#34cc1ba30b65d7a2d649c56b5a043c5c2d117878"
 dependencies = [
  "anyhow",
  "assert_no_alloc",
@@ -289,7 +289,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=3f007c8a683417fc633cf5447c92b6cef9432809#3f007c8a683417fc633cf5447c92b6cef9432809"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=34cc1ba30b65d7a2d649c56b5a043c5c2d117878#34cc1ba30b65d7a2d649c56b5a043c5c2d117878"
 dependencies = [
  "quote",
  "syn",
@@ -298,7 +298,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=3f007c8a683417fc633cf5447c92b6cef9432809#3f007c8a683417fc633cf5447c92b6cef9432809"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=34cc1ba30b65d7a2d649c56b5a043c5c2d117878#34cc1ba30b65d7a2d649c56b5a043c5c2d117878"
 dependencies = [
  "anyhow",
  "goblin",
@@ -595,7 +595,7 @@ checksum = "6ceab39d59e4c9499d4e5a8ee0e2735b891bb7308ac83dfb4e80cad195c9f6f3"
 [[package]]
 name = "vst3-com"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/note-off-event#bda8be0f6dacd2155765a64a32351dc9308164fe"
+source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/drop-box-from-raw#b3ff4d775940f5b476b9d1cca02a90e07e1922a2"
 dependencies = [
  "vst3-com-macros",
 ]
@@ -603,7 +603,7 @@ dependencies = [
 [[package]]
 name = "vst3-com-macros"
 version = "0.2.0"
-source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/note-off-event#bda8be0f6dacd2155765a64a32351dc9308164fe"
+source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/drop-box-from-raw#b3ff4d775940f5b476b9d1cca02a90e07e1922a2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -614,7 +614,7 @@ dependencies = [
 [[package]]
 name = "vst3-com-macros-support"
 version = "0.2.0"
-source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/note-off-event#bda8be0f6dacd2155765a64a32351dc9308164fe"
+source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/drop-box-from-raw#b3ff4d775940f5b476b9d1cca02a90e07e1922a2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -624,7 +624,7 @@ dependencies = [
 [[package]]
 name = "vst3-sys"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/note-off-event#bda8be0f6dacd2155765a64a32351dc9308164fe"
+source = "git+https://github.com/robbert-vdh/vst3-sys.git?branch=fix/drop-box-from-raw#b3ff4d775940f5b476b9d1cca02a90e07e1922a2"
 dependencies = [
  "vst3-com",
 ]

@@ -91,6 +91,8 @@ impl Plugin for NoGui {
 
     const SAMPLE_ACCURATE_AUTOMATION: bool = true;
 
+    type BackgroundTask = ();
+
     fn params(&self) -> Arc<dyn Params> {
         self.params.clone()
     }
@@ -111,7 +113,7 @@ impl Plugin for NoGui {
         &mut self,
         _: &mut Buffer,
         _: &mut AuxiliaryBuffers,
-        _: &mut impl ProcessContext,
+        _: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         ProcessStatus::Normal
     }

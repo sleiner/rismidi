@@ -107,6 +107,8 @@ impl Plugin for RisChannelize {
 
     const SAMPLE_ACCURATE_AUTOMATION: bool = true;
 
+    type BackgroundTask = ();
+
     fn params(&self) -> Arc<dyn Params> {
         self.params.clone()
     }
@@ -127,7 +129,7 @@ impl Plugin for RisChannelize {
         &mut self,
         _buffer: &mut Buffer,
         _aux: &mut AuxiliaryBuffers,
-        context: &mut impl ProcessContext,
+        context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
         while let Some(in_event) = context.next_event() {
             let target_chn = self.params.target_channel.plain_value();

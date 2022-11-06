@@ -1,4 +1,4 @@
-//! More plugin parameters in addition to [`nih_plug::param`].
+//! More plugin parameters in addition to [`nih_plug::params`].
 
 mod optional_midi_channel;
 

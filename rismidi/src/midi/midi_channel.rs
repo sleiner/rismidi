@@ -2,7 +2,7 @@ use crate::RismidiError;
 use nih_plug::prelude::*;
 
 /// Represents a MIDI channel.
-/// It can be used as a plugin parameter with [`nih_plug::param::EnumParam`].
+/// It can be used as a plugin parameter with [`nih_plug::params::EnumParam`].
 ///
 /// # Examples
 ///

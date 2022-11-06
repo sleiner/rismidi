@@ -24,12 +24,12 @@ thiserror = "1.0.37"
 
 [workspace.dependencies.nih_plug]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "36bf46f569cdc0aacd26ad3cf7ab6e6a9432df45"
+rev = "1df1a646a0dad5e0bdaa79a43718f690cfa1894b"
 features = ["assert_process_allocs"]
 
 [workspace.dependencies.nih_plug_xtask]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "36bf46f569cdc0aacd26ad3cf7ab6e6a9432df45"
+rev = "1df1a646a0dad5e0bdaa79a43718f690cfa1894b"
 
 [profile.release]
 codegen-units = 1

@@ -42,6 +42,13 @@ impl OptionalMidiChannelParam {
         instance.with_none_selected_description(Self::DEFAULT_NO_CHANNEL_DESCRIPTION)
     }
 
+    /// The field's current plain value, after monophonic modulation has been applied. Equivalent
+    /// to calling `param.modulated_plain_value()`.
+    #[inline]
+    pub fn value(&self) -> Option<MidiChannel> {
+        self.modulated_plain_value()
+    }
+
     /// Sets the description of the "no channel selected" position. Usually, this will be shown to
     /// the user by the plugin host.
     pub fn with_none_selected_description(mut self, description: &'static str) -> Self {
@@ -120,7 +127,7 @@ impl OptionalMidiChannelParam {
 
 impl Display for OptionalMidiChannelParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let string = Self::selection_to_string(self.plain_value(), self.description);
+        let string = Self::selection_to_string(self.modulated_plain_value(), self.description);
         write!(f, "{}", string)
     }
 }
@@ -128,7 +135,7 @@ impl Display for OptionalMidiChannelParam {
 impl Debug for OptionalMidiChannelParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("OptMidiChannelParam")
-            .field("channel", &self.plain_value())
+            .field("channel", &self.modulated_plain_value())
             .field("default", &self.default)
             .field("no_channel_msg", &self.description)
             .finish()
@@ -150,12 +157,12 @@ impl Param for OptionalMidiChannelParam {
         self.inner.poly_modulation_id()
     }
 
-    fn plain_value(&self) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.plain_value()).unwrap_or(self.default)
+    fn modulated_plain_value(&self) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.modulated_plain_value()).unwrap_or(self.default)
     }
 
-    fn normalized_value(&self) -> f32 {
-        self.inner.normalized_value()
+    fn modulated_normalized_value(&self) -> f32 {
+        self.inner.modulated_normalized_value()
     }
 
     fn unmodulated_plain_value(&self) -> Self::Plain {
@@ -174,13 +181,16 @@ impl Param for OptionalMidiChannelParam {
         self.inner.step_count()
     }
 
-    fn previous_step(&self, from: Self::Plain) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.previous_step(Self::selection_to_inner(from)))
-            .unwrap_or(self.default)
+    fn previous_step(&self, from: Self::Plain, finer: bool) -> Self::Plain {
+        Self::try_selection_from_inner(
+            self.inner
+                .previous_step(Self::selection_to_inner(from), finer),
+        )
+        .unwrap_or(self.default)
     }
 
-    fn next_step(&self, from: Self::Plain) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.next_step(Self::selection_to_inner(from)))
+    fn next_step(&self, from: Self::Plain, finer: bool) -> Self::Plain {
+        Self::try_selection_from_inner(self.inner.next_step(Self::selection_to_inner(from), finer))
             .unwrap_or(self.default)
     }
 
@@ -196,7 +206,7 @@ impl Param for OptionalMidiChannelParam {
     fn string_to_normalized_value(&self, _string: &str) -> Option<f32> {
         // This function is usually never called - nih_plug calls IntParam's implementation of this function.
         nih_debug_assert_failure!(
-            "Did not expect a call of OptionalMidiChannelParam::string_to_normalized_value()"
+            "Did not expect a call of OptionalMidiChannelParam::string_to_modulated_normalized_value()"
         );
 
         None
@@ -225,7 +235,7 @@ mod tests {
 
     fn current_description(param: impl Param) -> String {
         let p = param.as_ptr();
-        unsafe { p.normalized_value_to_string(p.normalized_value(), true) }
+        unsafe { p.normalized_value_to_string(p.modulated_normalized_value(), true) }
     }
 
     #[test]

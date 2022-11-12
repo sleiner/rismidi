@@ -72,9 +72,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "cc"
-version = "1.0.74"
+version = "1.0.76"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "581f5dba903aac52ea3feb5ec4810848460ee833876f1f9b0fdeab1f19091574"
+checksum = "76a284da2e6fe2092f2353e51713435363112dfd60030e22add80be333fb928f"
 
 [[package]]
 name = "cfg-if"
@@ -259,7 +259,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=1df1a646a0dad5e0bdaa79a43718f690cfa1894b#1df1a646a0dad5e0bdaa79a43718f690cfa1894b"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
 dependencies = [
  "anyhow",
  "assert_no_alloc",
@@ -289,7 +289,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=1df1a646a0dad5e0bdaa79a43718f690cfa1894b#1df1a646a0dad5e0bdaa79a43718f690cfa1894b"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
 dependencies = [
  "quote",
  "syn",
@@ -298,7 +298,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=1df1a646a0dad5e0bdaa79a43718f690cfa1894b#1df1a646a0dad5e0bdaa79a43718f690cfa1894b"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
 dependencies = [
  "anyhow",
  "goblin",

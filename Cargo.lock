@@ -425,6 +425,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ris_delay"
+version = "0.1.0"
+dependencies = [
+ "nih_plug",
+ "rismidi",
+]
+
+[[package]]
 name = "rismidi"
 version = "0.1.0"
 dependencies = [

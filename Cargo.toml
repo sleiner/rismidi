@@ -4,6 +4,7 @@ members = [
 
     "plugins/ris_channelize",
     "plugins/ris_channel_filter",
+    "plugins/ris_delay",
     "plugins/nogui",
 
     "xtask",

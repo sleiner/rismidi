@@ -17,8 +17,24 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+      - name: Cargo cache
+        uses: swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true
+      - name: Install SARIF tools
+        run: cargo install clippy-sarif sarif-fmt
       - name: Run clippy
-        run: cargo clippy --all-features --all --no-deps
+        run: >
+          cargo clippy --all-features --all --no-deps --message-format=json
+          | clippy-sarif
+          | tee clippy-results.sarif
+          | sarif-fmt
+        continue-on-error: true
+      - name: Upload analysis results to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: clippy-results.sarif
+          wait-for-processing: true
 
   rustfmt:
     name: Rustfmt

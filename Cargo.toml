@@ -15,7 +15,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Simon Leiner <simon@leiner.me>"]
 license = "GPL-3.0"
-repository = "https://github.com/rismidi/rismidi"
+repository = "https://github.com/sleiner/rismidi"
 
 [workspace.dependencies]
 lazy_static = "1.4.0"

@@ -69,7 +69,10 @@ jobs:
             fi
           }
 
-          for package in $(cargo xtask known-packages); do
+          packages=$(cargo xtask known-packages)
+          echo ""
+
+          for package in ${packages}; do
             echo "::group::${package}"
             cargo xtask $(bundle_command) ${package} --profile ${BUILD_PROFILE}
             echo "::endgroup::"

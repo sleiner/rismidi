@@ -74,7 +74,7 @@ jobs:
 
           for package in ${packages}; do
             echo "::group::${package}"
-            cargo xtask $(bundle_command) ${package} --profile ${BUILD_PROFILE}
+            cargo xtask "$(bundle_command)" "${package}" --profile "${BUILD_PROFILE}"
             echo "::endgroup::"
           done
       - name: Build VST3 validator

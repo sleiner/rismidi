@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    reviewers:
+      - "sleiner"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "cargo"
+    directory: "/validate_vst3"
+    reviewers:
+      - "sleiner"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    reviewers:
+      - "sleiner"
+    schedule:
+      interval: "weekly"

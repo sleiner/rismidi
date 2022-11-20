@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: "15 11 * * 6"
 
 env:
   CARGO_TERM_COLOR: always

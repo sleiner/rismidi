@@ -259,7 +259,7 @@ dependencies = [
 [[package]]
 name = "nih_plug"
 version = "0.0.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=9a77bd29182d2b9b1135e445b659d4c91f2fde11#9a77bd29182d2b9b1135e445b659d4c91f2fde11"
 dependencies = [
  "anyhow",
  "assert_no_alloc",
@@ -289,8 +289,9 @@ dependencies = [
 [[package]]
 name = "nih_plug_derive"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=9a77bd29182d2b9b1135e445b659d4c91f2fde11#9a77bd29182d2b9b1135e445b659d4c91f2fde11"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
 ]
@@ -298,7 +299,7 @@ dependencies = [
 [[package]]
 name = "nih_plug_xtask"
 version = "0.1.0"
-source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=148fc3379b53bf6afad81394f4cb1da8c8aa4b2d#148fc3379b53bf6afad81394f4cb1da8c8aa4b2d"
+source = "git+https://github.com/robbert-vdh/nih-plug.git?rev=9a77bd29182d2b9b1135e445b659d4c91f2fde11#9a77bd29182d2b9b1135e445b659d4c91f2fde11"
 dependencies = [
  "anyhow",
  "goblin",

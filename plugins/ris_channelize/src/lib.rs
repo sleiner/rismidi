@@ -14,7 +14,7 @@ struct RisChannelize {
 
 #[derive(Params)]
 struct RisChannelizeParams {
-    #[id = "target_channel"]
+    #[nested(id_prefix = "target_channel")]
     pub target_channel: OptionalMidiChannelParam,
 }
 

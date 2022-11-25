@@ -6,9 +6,11 @@ use std::{
 };
 
 /// A plugin parameter modelling either the selection of a MIDI channel or the explicit selection of no channel.
+#[derive(Params)]
 pub struct OptionalMidiChannelParam {
     /// As this is a parameter with a finite choice of (mostly) sequential options, we delegate most of the heavy
     /// lifting to this.
+    #[id = ""]
     inner: IntParam,
 
     /// We store the default here in addition to `inner.default` to avoid runtime conversions in
@@ -16,7 +18,7 @@ pub struct OptionalMidiChannelParam {
     default: Option<MidiChannel>,
 
     /// The parameter description visible in the plugin host if no channel is selected.
-    description: &'static str,
+    no_channel_description: &'static str,
 }
 
 impl OptionalMidiChannelParam {
@@ -36,23 +38,28 @@ impl OptionalMidiChannelParam {
         let instance = Self {
             inner: IntParam::new(name, Self::selection_to_inner(default), Self::RANGE),
             default,
-            description: "",
+            no_channel_description: "",
         };
 
         instance.with_none_selected_description(Self::DEFAULT_NO_CHANNEL_DESCRIPTION)
     }
 
-    /// The field's current plain value, after monophonic modulation has been applied. Equivalent
-    /// to calling `param.modulated_plain_value()`.
+    /// The field's current plain value, after monophonic modulation has been applied.
     #[inline]
     pub fn value(&self) -> Option<MidiChannel> {
-        self.modulated_plain_value()
+        Self::try_selection_from_inner(self.inner.value()).unwrap_or(self.default)
+    }
+
+    /// Returns the [`String`] representation for the current value.
+    pub fn description(&self) -> String {
+        let normalized = self.inner.modulated_normalized_value();
+        self.inner.normalized_value_to_string(normalized, true)
     }
 
     /// Sets the description of the "no channel selected" position. Usually, this will be shown to
     /// the user by the plugin host.
     pub fn with_none_selected_description(mut self, description: &'static str) -> Self {
-        self.description = description;
+        self.no_channel_description = description;
 
         self.with_updated_callbacks()
     }
@@ -62,10 +69,11 @@ impl OptionalMidiChannelParam {
             .inner
             .with_value_to_string(Arc::new(|index| {
                 let selection = Self::try_selection_from_inner(index).unwrap_or_default();
-                Self::selection_to_string(selection, self.description)
+                Self::selection_to_string(selection, self.no_channel_description)
             }))
             .with_string_to_value(Arc::new(|string| {
-                let selection = Self::try_selection_from_string(string, self.description).ok()?;
+                let selection =
+                    Self::try_selection_from_string(string, self.no_channel_description).ok()?;
                 Some(Self::selection_to_inner(selection))
             }));
 
@@ -127,7 +135,7 @@ impl OptionalMidiChannelParam {
 
 impl Display for OptionalMidiChannelParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let string = Self::selection_to_string(self.modulated_plain_value(), self.description);
+        let string = Self::selection_to_string(self.value(), self.no_channel_description);
         write!(f, "{}", string)
     }
 }
@@ -135,108 +143,16 @@ impl Display for OptionalMidiChannelParam {
 impl Debug for OptionalMidiChannelParam {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("OptMidiChannelParam")
-            .field("channel", &self.modulated_plain_value())
+            .field("channel", &self.value())
             .field("default", &self.default)
-            .field("no_channel_msg", &self.description)
+            .field("no_channel_msg", &self.no_channel_description)
             .finish()
-    }
-}
-
-impl Param for OptionalMidiChannelParam {
-    type Plain = Option<MidiChannel>;
-
-    fn name(&self) -> &str {
-        self.inner.name()
-    }
-
-    fn unit(&self) -> &'static str {
-        self.inner.unit()
-    }
-
-    fn poly_modulation_id(&self) -> Option<u32> {
-        self.inner.poly_modulation_id()
-    }
-
-    fn modulated_plain_value(&self) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.modulated_plain_value()).unwrap_or(self.default)
-    }
-
-    fn modulated_normalized_value(&self) -> f32 {
-        self.inner.modulated_normalized_value()
-    }
-
-    fn unmodulated_plain_value(&self) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.unmodulated_plain_value()).unwrap_or(self.default)
-    }
-
-    fn unmodulated_normalized_value(&self) -> f32 {
-        self.inner.unmodulated_normalized_value()
-    }
-
-    fn default_plain_value(&self) -> Self::Plain {
-        self.default
-    }
-
-    fn step_count(&self) -> Option<usize> {
-        self.inner.step_count()
-    }
-
-    fn previous_step(&self, from: Self::Plain, finer: bool) -> Self::Plain {
-        Self::try_selection_from_inner(
-            self.inner
-                .previous_step(Self::selection_to_inner(from), finer),
-        )
-        .unwrap_or(self.default)
-    }
-
-    fn next_step(&self, from: Self::Plain, finer: bool) -> Self::Plain {
-        Self::try_selection_from_inner(self.inner.next_step(Self::selection_to_inner(from), finer))
-            .unwrap_or(self.default)
-    }
-
-    fn normalized_value_to_string(&self, _normalized: f32, _include_unit: bool) -> String {
-        // This function is usually never called - nih_plug calls IntParam's implementation of this function.
-        nih_debug_assert_failure!(
-            "Did not expect a call of OptionalMidiChannelParam::normalized_value_to_string()"
-        );
-
-        String::from("")
-    }
-
-    fn string_to_normalized_value(&self, _string: &str) -> Option<f32> {
-        // This function is usually never called - nih_plug calls IntParam's implementation of this function.
-        nih_debug_assert_failure!(
-            "Did not expect a call of OptionalMidiChannelParam::string_to_modulated_normalized_value()"
-        );
-
-        None
-    }
-
-    fn preview_normalized(&self, plain: Self::Plain) -> f32 {
-        Self::RANGE.normalize(Self::selection_to_inner(plain))
-    }
-
-    fn preview_plain(&self, normalized: f32) -> Self::Plain {
-        Self::try_selection_from_inner(Self::RANGE.unnormalize(normalized)).unwrap_or(self.default)
-    }
-
-    fn flags(&self) -> ParamFlags {
-        self.inner.flags()
-    }
-
-    fn as_ptr(&self) -> ParamPtr {
-        self.inner.as_ptr()
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    fn current_description(param: impl Param) -> String {
-        let p = param.as_ptr();
-        unsafe { p.normalized_value_to_string(p.modulated_normalized_value(), true) }
-    }
 
     #[test]
     fn description_when_none_selected() {
@@ -245,7 +161,7 @@ mod tests {
             .with_none_selected_description(no_channel_description);
 
         // param is still in the default position: no channel selected
-        assert_eq!(current_description(param), no_channel_description);
+        assert_eq!(param.description(), no_channel_description);
     }
 
     #[test]
@@ -254,7 +170,7 @@ mod tests {
             let channel = MidiChannel::try_from_1_based(i).unwrap();
             let param = OptionalMidiChannelParam::new("test", Some(channel));
 
-            assert_eq!(current_description(param), format!("{i}"));
+            assert_eq!(param.description(), format!("{i}"));
         }
     }
 }

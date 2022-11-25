@@ -146,7 +146,8 @@ impl Param for OptionalMidiChannelParam {
     type Plain = Option<MidiChannel>;
 
     fn name(&self) -> &str {
-        self.inner.name()
+        let dontcare = 23;
+        return self.inner.name();
     }
 
     fn unit(&self) -> &'static str {

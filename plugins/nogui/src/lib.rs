@@ -80,11 +80,7 @@ impl Plugin for NoGui {
 
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 
-    const DEFAULT_INPUT_CHANNELS: u32 = 0;
-    const DEFAULT_OUTPUT_CHANNELS: u32 = 0;
-
-    // const DEFAULT_AUX_INPUTS: Option<AuxiliaryIOConfig> = None;
-    // const DEFAULT_AUX_OUTPUTS: Option<AuxiliaryIOConfig> = None;
+    const AUDIO_IO_LAYOUTS: &'static [AudioIOLayout] = &[AudioIOLayout::const_default()];
 
     const MIDI_INPUT: MidiConfig = MidiConfig::MidiCCs;
     const MIDI_OUTPUT: MidiConfig = MidiConfig::MidiCCs;
@@ -92,21 +88,10 @@ impl Plugin for NoGui {
     const SAMPLE_ACCURATE_AUTOMATION: bool = true;
 
     type BackgroundTask = ();
+    type SysExMessage = ();
 
     fn params(&self) -> Arc<dyn Params> {
         self.params.clone()
-    }
-
-    fn accepts_bus_config(&self, config: &BusConfig) -> bool {
-        let no_aux_busses = AuxiliaryIOConfig {
-            num_busses: 0,
-            num_channels: 0,
-        };
-
-        config.num_input_channels == 0
-            && config.num_output_channels == 0
-            && config.aux_input_busses == no_aux_busses
-            && config.aux_output_busses == no_aux_busses
     }
 
     fn process(
@@ -131,7 +116,8 @@ impl ClapPlugin for NoGui {
 
 impl Vst3Plugin for NoGui {
     const VST3_CLASS_ID: [u8; 16] = *b"nogui...........";
-    const VST3_CATEGORIES: &'static str = "Fx|Tools";
+    const VST3_SUBCATEGORIES: &'static [Vst3SubCategory] =
+        &[Vst3SubCategory::Fx, Vst3SubCategory::Tools];
 }
 
 nih_export_clap!(NoGui);

@@ -9,6 +9,7 @@ members = [
     "xtask",
 ]
 exclude = ["validate_vst3"]
+resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
@@ -24,12 +25,12 @@ thiserror = "1.0.48"
 
 [workspace.dependencies.nih_plug]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "9a77bd29182d2b9b1135e445b659d4c91f2fde11"
+rev = "c0a72661e1dc1efb4d6281a619fe264e37314efc"
 features = ["assert_process_allocs"]
 
 [workspace.dependencies.nih_plug_xtask]
 git = "https://github.com/robbert-vdh/nih-plug.git"
-rev = "9a77bd29182d2b9b1135e445b659d4c91f2fde11"
+rev = "c0a72661e1dc1efb4d6281a619fe264e37314efc"
 
 [profile.release]
 codegen-units = 1

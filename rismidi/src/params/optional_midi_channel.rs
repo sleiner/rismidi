@@ -29,7 +29,7 @@ impl OptionalMidiChannelParam {
     const RANGE: IntRange = IntRange::Linear { min: 0, max: 16 };
 
     /// The default description of the "no channel selected" state.
-    pub const DEFAULT_NO_CHANNEL_DESCRIPTION: &str = "No Channel";
+    pub const DEFAULT_NO_CHANNEL_DESCRIPTION: &'static str = "No Channel";
 
     /// Creates a new [`OptionalMidiChannelParam`].
     ///

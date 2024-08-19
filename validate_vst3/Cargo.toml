@@ -6,7 +6,7 @@ description = "Validate all rismidi plugins using the VST3 SDK"
 publish = false
 
 [build-dependencies]
-cmake = "0.1.50"
+cmake = "0.1.51"
 color-eyre = "0.6.3"
 toml = "0.8.16"
 

@@ -21,7 +21,7 @@ repository = "https://github.com/rismidi/rismidi"
 [workspace.dependencies]
 lazy_static = "1.5.0"
 rismidi = { path = "./rismidi" }
-thiserror = "1.0.63"
+thiserror = "1.0.65"
 
 [workspace.dependencies.nih_plug]
 git = "https://github.com/robbert-vdh/nih-plug.git"

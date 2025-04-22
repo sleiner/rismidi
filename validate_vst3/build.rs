@@ -55,7 +55,7 @@ mod validate {
 ";
 
     for plugin in plugins {
-        let plugin_path = plugin_dir.join(&format!("{plugin}.vst3")).into_os_string();
+        let plugin_path = plugin_dir.join(format!("{plugin}.vst3")).into_os_string();
         let plugin_path = plugin_path.to_str().unwrap();
         code += &format!(
             "

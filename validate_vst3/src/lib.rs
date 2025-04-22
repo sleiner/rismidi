@@ -43,7 +43,7 @@ pub fn validate_plugin(plugin: &Path, mode: &ValidationMode) -> Result<()> {
             cmd.arg("-e");
         }
         ValidationMode::SingleSuite(suite) => {
-            cmd.args(["-suite", &suite]);
+            cmd.args(["-suite", suite]);
         }
         _ => {}
     };

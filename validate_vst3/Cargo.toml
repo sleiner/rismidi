@@ -7,8 +7,8 @@ publish = false
 
 [build-dependencies]
 cmake = "0.1.54"
-color-eyre = "0.6.3"
+color-eyre = "0.6.4"
 toml = "0.8.20"
 
 [dependencies]
-color-eyre = "0.6.3"
+color-eyre = "0.6.4"
